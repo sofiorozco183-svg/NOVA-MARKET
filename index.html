@@ -1,0 +1,461 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7042c5">
+<title>NOVA MARKET</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5fa;
+  color: #202033;
+}
+
+header {
+  background: white;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  box-shadow: 0 2px 10px #00000010;
+}
+
+.logo {
+  color: #7042c5;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.btn {
+  background: #7042c5;
+  color: white;
+  padding: 12px 17px;
+  border-radius: 12px;
+}
+
+main {
+  max-width: 1050px;
+  margin: auto;
+  padding: 22px 16px;
+}
+
+.hero {
+  background: #e9ddff;
+  padding: 38px 25px;
+  border-radius: 25px;
+  margin-bottom: 25px;
+}
+
+.hero h1 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  color: #5d5670;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.search {
+  width: 100%;
+  padding: 17px;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.categories {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+
+.category {
+  background: white;
+  border-radius: 30px;
+  padding: 13px 20px;
+  white-space: nowrap;
+}
+
+.category.active {
+  background: #7042c5;
+  color: white;
+}
+
+h2 {
+  margin: 15px 0 20px;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(155px,1fr));
+  gap: 16px;
+}
+
+.product {
+  background: white;
+  padding: 13px;
+  border-radius: 20px;
+  box-shadow: 0 5px 18px #00000008;
+}
+
+.product-image {
+  height: 145px;
+  border-radius: 14px;
+  background: #eee7ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 65px;
+  margin-bottom: 13px;
+}
+
+.product h3 {
+  font-size: 17px;
+  margin-bottom: 9px;
+}
+
+.price {
+  color: #7042c5;
+  font-size: 19px;
+  font-weight: bold;
+  margin-bottom: 13px;
+}
+
+.product button {
+  width: 100%;
+}
+
+.seller {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  margin-top: 35px;
+}
+
+.seller p {
+  color: #666;
+  line-height: 1.5;
+  margin: 10px 0 18px;
+}
+
+footer {
+  text-align: center;
+  padding: 30px 15px;
+  color: #777;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #0009;
+  z-index: 10;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content input,
+.modal-content select {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.modal-content button {
+  margin-top: 8px;
+}
+
+.cart-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+@media(min-width:700px) {
+  .hero h1 {font-size: 42px;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">NOVA MARKET</div>
+  <button class="btn" onclick="openCart()">
+    🛒 Carrito (<span id="cartCount">0</span>)
+  </button>
+</header>
+
+<main>
+
+<section class="hero">
+  <h1>Descubre algo nuevo.</h1>
+  <p>Encuentra tus productos favoritos en un solo lugar.</p>
+</section>
+
+<input
+  class="search"
+  id="search"
+  type="search"
+  placeholder="Buscar productos..."
+  oninput="renderProducts()"
+>
+
+<div class="categories">
+  <button class="category active" onclick="filterCategory('Todos',this)">Todos</button>
+  <button class="category" onclick="filterCategory('Belleza',this)">Belleza</button>
+  <button class="category" onclick="filterCategory('Moda',this)">Moda</button>
+  <button class="category" onclick="filterCategory('Tecnología',this)">Tecnología</button>
+  <button class="category" onclick="filterCategory('Accesorios',this)">Accesorios</button>
+</div>
+
+<h2>Productos destacados</h2>
+
+<section class="products" id="products"></section>
+
+<section class="seller">
+  <h2>¿Quieres vender en NOVA MARKET?</h2>
+  <p>
+    Crea tu tienda, publica tus productos y llega a nuevos compradores.
+    Nuestra comisión de plataforma es del 10% por cada venta.
+  </p>
+  <button class="btn" onclick="openSeller()">
+    Soy vendedor →
+  </button>
+</section>
+
+</main>
+
+<footer>
+  <strong>NOVA MARKET © 2026</strong>
+  <p>Tu próximo descubrimiento está aquí.</p>
+</footer>
+
+<!-- CARRITO -->
+
+<div class="modal" id="cartModal">
+  <div class="modal-content">
+    <h2>🛒 Mi carrito</h2>
+    <div id="cartItems"></div>
+    <h3 id="cartTotal">Total: $0</h3>
+    <p id="commissionInfo"></p>
+    <button class="btn" onclick="checkout()">Continuar</button>
+    <button class="btn" onclick="closeModals()" style="background:#777">
+      Cerrar
+    </button>
+  </div>
+</div>
+
+<!-- REGISTRO DE VENDEDORES -->
+
+<div class="modal" id="sellerModal">
+  <div class="modal-content">
+    <h2>Registro de vendedores</h2>
+    <p>Comienza a publicar tus productos.</p>
+
+    <form id="sellerForm">
+      <input id="storeName" placeholder="Nombre de tu tienda" required>
+      <input id="productName" placeholder="Nombre del producto" required>
+
+      <select id="productCategory">
+        <option>Belleza</option>
+        <option>Moda</option>
+        <option>Tecnología</option>
+        <option>Accesorios</option>
+      </select>
+
+      <input id="productPrice" type="number" min="1"
+        placeholder="Precio en pesos colombianos" required>
+
+      <button class="btn" type="submit">Publicar producto</button>
+      <button class="btn" type="button"
+        onclick="closeModals()" style="background:#777">
+        Cancelar
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+
+let products = [
+  {name:"Bolso elegante",price:55000,category:"Moda",emoji:"👜"},
+  {name:"Perfume floral",price:45000,category:"Belleza",emoji:"🌸"},
+  {name:"Audífonos",price:85000,category:"Tecnología",emoji:"🎧"},
+  {name:"Reloj moderno",price:65000,category:"Accesorios",emoji:"⌚"},
+  {name:"Maquillaje",price:35000,category:"Belleza",emoji:"💄"},
+  {name:"Tenis urbanos",price:95000,category:"Moda",emoji:"👟"}
+];
+
+let cart = [];
+let selectedCategory = "Todos";
+
+function money(value) {
+  return "$" + Number(value).toLocaleString("es-CO");
+}
+
+function renderProducts() {
+  const search = document.getElementById("search").value.toLowerCase();
+
+  const filtered = products.filter(p =>
+    (selectedCategory === "Todos" || p.category === selectedCategory) &&
+    p.name.toLowerCase().includes(search)
+  );
+
+  document.getElementById("products").innerHTML =
+    filtered.length ? filtered.map((p,i) => `
+      <article class="product">
+        <div class="product-image">${p.emoji || "📦"}</div>
+        <h3>${safe(p.name)}</h3>
+        <div class="price">${money(p.price)}</div>
+        <button class="btn" onclick="addToCart(${products.indexOf(p)})">
+          Agregar al carrito
+        </button>
+      </article>
+    `).join("") : "<p>No encontramos productos.</p>";
+}
+
+function safe(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+function filterCategory(category,button) {
+  selectedCategory = category;
+  document.querySelectorAll(".category").forEach(b =>
+    b.classList.remove("active")
+  );
+  button.classList.add("active");
+  renderProducts();
+}
+
+function addToCart(index) {
+  cart.push(products[index]);
+  updateCart();
+}
+
+function updateCart() {
+  document.getElementById("cartCount").textContent = cart.length;
+
+  document.getElementById("cartItems").innerHTML =
+    cart.length ? cart.map((p,i) => `
+      <div class="cart-item">
+        ${safe(p.name)} — ${money(p.price)}
+        <button onclick="removeItem(${i})">❌</button>
+      </div>
+    `).join("") : "<p>Tu carrito está vacío.</p>";
+
+  const total = cart.reduce((sum,p) => sum + p.price,0);
+  document.getElementById("cartTotal").textContent =
+    "Total: " + money(total);
+
+  document.getElementById("commissionInfo").textContent =
+    "Comisión de plataforma estimada (10%): " + money(total * 0.10);
+}
+
+function removeItem(index) {
+  cart.splice(index,1);
+  updateCart();
+}
+
+function openCart() {
+  updateCart();
+  document.getElementById("cartModal").style.display = "flex";
+}
+
+function openSeller() {
+  document.getElementById("sellerModal").style.display = "flex";
+}
+
+function closeModals() {
+  document.querySelectorAll(".modal").forEach(m =>
+    m.style.display = "none"
+  );
+}
+
+function checkout() {
+  alert("Esta es una demostración. Los pagos reales todavía no están conectados.");
+}
+
+document.getElementById("sellerForm").addEventListener("submit",function(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("productName").value.trim();
+  const price = Number(document.getElementById("productPrice").value);
+  const category = document.getElementById("productCategory").value;
+  const store = document.getElementById("storeName").value.trim();
+
+  if (!name || !store || !Number.isFinite(price) || price <= 0) {
+    alert("Revisa los datos del producto.");
+    return;
+  }
+
+  const emojis = {
+    Belleza:"💄",
+    Moda:"👗",
+    Tecnología:"📱",
+    Accesorios:"💍"
+  };
+
+  products.push({
+    name:name,
+    price:price,
+    category:category,
+    emoji:emojis[category]
+  });
+
+  renderProducts();
+  closeModals();
+  this.reset();
+
+  alert("Producto agregado a esta demostración de NOVA MARKET.");
+});
+
+renderProducts();
+updateCart();
+
+</script>
+
+</body>
+</html>
